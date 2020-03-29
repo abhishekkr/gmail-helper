@@ -1,0 +1,17 @@
+*swn
+*swo
+*swp
+*~
+*.tmp
+temp/*
+.bundle
+.venv
+.goenv
+.config
+*.cfg
+*.lock
+*.sock
+*.db
+*.pickle
+data/**
+*.pyc

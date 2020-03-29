@@ -1,0 +1,20 @@
+gmail_credential_jsonpath: "/secure-read-only-to-me-path/credentials.json"
+
+gmail_auth_picklepath: "/secure-read-only-to-me-patch/gmail.pickle"
+
+log_debug: "on"
+
+scopes:
+  - "https://mail.google.com/"
+
+data_basepath: "data"
+
+since_year: 2006
+
+before_year: 2018
+
+filters_to_delete:
+  - "subject:(just uploaded a video)"
+  - "from:(notifications@github.com)"
+  - "to:(googlegroups.com)"
+  - "from:(googlegroups.com)"
