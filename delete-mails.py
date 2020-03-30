@@ -1,5 +1,9 @@
 # Copyright 2018 abhishekkr <abhikumar163@gmail.com>
 """
+How to use:
+    python3 delete-mails.py ./config-yamls/delete-mails-config.yaml
+
+
 How to configure:
 
 * using "delete-mails-config.yaml", update all values to required configuration

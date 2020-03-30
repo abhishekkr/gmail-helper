@@ -15,6 +15,8 @@
 * Permanently delete mails based on search criteria allowed by GMail such as partial match of `subject`, `to` or `from` e-mail address fields (also allowing just domain match). Ran for a range of years provided by config as `since_year` and `before_year`.
 
 > by default it reads mails first and stores it locally in a sqlite DB separated by year of mail, then deletes
+>
+> How to use: `python3 delete-mails.py ./config-yamls/delete-mails-config.yaml`
 
 ---
 
