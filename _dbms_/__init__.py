@@ -16,6 +16,7 @@ def sql_connection(dbpath='mydatabase.db'):
         Local db connection object.
     """
     try:
+        _log.logger.debug("creating db at %s" % (dbpath))
         db_connection = sqlite3.connect(dbpath)
         return db_connection
     except Error:
@@ -49,6 +50,34 @@ def create_schema_messages(db):
     db.commit()
 
 
+def sender_of_message(message):
+    try:
+        return [item['value'] for item in message['payload']['headers'] if item['name'] == 'From'][0]
+    except:
+        return ""
+
+
+def receiver_of_message(message):
+    try:
+        return [item['value'] for item in message['payload']['headers'] if item['name'] == 'To'][0]
+    except:
+        return ""
+
+
+def subject_of_message(message):
+    try:
+        return [item['value'] for item in message['payload']['headers'] if item['name'] == 'Subject'][0]
+    except:
+        return ""
+
+
+def date_of_message(message):
+    try:
+        return [item['value'] for item in message['payload']['headers'] if item['name'] == 'Date'][0]
+    except:
+        return ""
+
+
 def add_message(db, message):
     """Get and Delete a list of messages from GMail by Query.
 
@@ -57,10 +86,6 @@ def add_message(db, message):
         message: GMail message JSON object as read by get api.
     """
     _log.logger.debug("[+] adding message: %s" % (message['id']))
-    sender = [item['value'] for item in message['payload']['headers'] if item['name'] == 'From'][0]
-    receiver = [item['value'] for item in message['payload']['headers'] if item['name'] == 'To'][0]
-    subject = [item['value'] for item in message['payload']['headers'] if item['name'] == 'Subject'][0]
-    on_date = [item['value'] for item in message['payload']['headers'] if item['name'] == 'Date'][0]
 
     cursorObj = db.cursor()
     sql_stmt = """INSERT INTO messages
@@ -70,10 +95,10 @@ def add_message(db, message):
         message['id'],
         message['threadId'],
         ",".join(message['labelIds']),
-        sender,
-        receiver,
-        subject,
-        on_date,
+        sender_of_message(message),
+        receiver_of_message(message),
+        subject_of_message(message),
+        date_of_message(message),
         message['snippet'],
         int(message['internalDate']),
         str(message),
@@ -81,14 +106,16 @@ def add_message(db, message):
 
     try:
         cursorObj.execute(sql_stmt, values)
-        _log.logger.debug("date:    %s" % (on_date))
-        _log.logger.debug("from:    %s" % (sender))
-        _log.logger.debug("to:      %s" % (receiver))
-        _log.logger.debug("subject: %s" % (subject))
+        _log.logger.debug("on %s | from: %s | to: %s | subject: %s" % (
+            date_of_message(message),
+            sender_of_message(message),
+            receiver_of_message(message),
+            subject_of_message(message)))
         _log.logger.debug("---------------------")
         db.commit()
     except:
         _log.logger.error("failed to insert for %s" % (message['id']))
+        sys.exit(0)
 
 
 def dbpath_by_year(year):

@@ -18,3 +18,5 @@ filters_to_delete:
   - "from:(notifications@github.com)"
   - "to:(googlegroups.com)"
   - "from:(googlegroups.com)"
+
+message_ids_to_skip: []

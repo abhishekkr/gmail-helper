@@ -1,7 +1,8 @@
 from apiclient import errors
 
-import _logging_ as _log
+import _config_ as _cfg
 import _dbms_ as _db
+import _logging_ as _log
 
 
 def get_mail(db, messages_obj, msg_id, user_id='me'):
@@ -82,7 +83,9 @@ def get_delete_mails_by_query(db, messages_obj, user_id='me', query=''):
         query: String used to filter messages returned.
         Eg.- 'from:user@some_domain.com' for Messages from a particular sender.
     """
+    message_ids_to_skip = _cfg.message_ids_to_skip()
     for message in mails_by_query(messages_obj, user_id, query):
+        if message['id'] in message_ids_to_skip: continue
         _log.logger.debug(message['id'])
         get_mail(db, messages_obj, message['id'])
         delete_mail(messages_obj, message['id'])

@@ -77,3 +77,10 @@ def filters_to_delete():
         return ret_val
     else:
         return ret_val.split(",")
+
+def message_ids_to_skip():
+    ret_val = env_else_yaml("message_ids_to_skip")
+    if isinstance(ret_val, list):
+        return ret_val
+    else:
+        return ret_val.split(",")
