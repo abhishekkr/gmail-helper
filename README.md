@@ -20,13 +20,15 @@
 >
 > GMail API doc: [developers.google.com/gmail/api/v1/reference/users/messages/delete](https://developers.google.com/gmail/api/v1/reference/users/messages/delete)
 
+* Fetch created GMail Labels and persist to a local DB
+
+> How to use: `python3 get-labels.py ./config-yamls/get-labels-config.yaml`
+
 ---
 
 #### ToDo
 
 * offline backup of mails (all/filtered) into local SQLite3 db file; not of attachments
-
-* delete filtered mails (by search term, by label); skips mails with attachment but can be forced to delete
 
 * send mails from a custom template to a list of receivers
 
