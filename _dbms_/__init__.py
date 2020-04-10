@@ -1,6 +1,7 @@
 import os
 import sqlite3
 from sqlite3 import Error
+import sys
 
 import _logging_ as _log
 import _config_ as _cfg
@@ -29,7 +30,7 @@ def create_schema_messages(db):
     Args:
         db: Local db connection object.
     """
-    _log.logger.debug("creating table message")
+    _log.logger.debug("creating table messages")
     cursorObj = db.cursor()
     cursorObj.execute("""CREATE TABLE IF NOT EXISTS messages(
         id text,
@@ -47,6 +48,23 @@ def create_schema_messages(db):
         ON messages (threadId);""")
     cursorObj.execute("""CREATE INDEX IF NOT EXISTS idx_messages_internalDate
         ON messages (internalDate);""")
+    db.commit()
+
+
+def create_schema_labels(db):
+    """Creates 'labels' schema on given DB connection.
+
+    Args:
+        db: Local db connection object.
+    """
+    _log.logger.debug("creating table labels")
+    cursorObj = db.cursor()
+    cursorObj.execute("""CREATE TABLE IF NOT EXISTS labels(
+        name text,
+        label blob,
+        CONSTRAINT name_pk PRIMARY KEY (name))""")
+    cursorObj.execute("""CREATE INDEX IF NOT EXISTS idx_labels_name
+        ON labels (name);""")
     db.commit()
 
 
@@ -78,13 +96,26 @@ def date_of_message(message):
         return ""
 
 
+def message_exists(db, message_id):
+    sql_stmt = """SELECT * FROM messages WHERE id = '%s';""" % (message_id)
+    cursorObj = db.cursor()
+    result = cursorObj.execute(sql_stmt)
+    del cursorObj
+    if result.fetchone() == None:
+        return False
+    return True
+
+
 def add_message(db, message):
-    """Get and Delete a list of messages from GMail by Query.
+    """Persist a message from GMail if doesn't already exists locally.
 
     Args:
         db: Local db connection object.
         message: GMail message JSON object as read by get api.
     """
+    if message_exists(db, message['id']):
+        _log.logger.info("message:%s already exists, skipping db entry" % (message['id']))
+        return
     _log.logger.debug("[+] adding message: %s" % (message['id']))
 
     cursorObj = db.cursor()
@@ -113,12 +144,60 @@ def add_message(db, message):
             subject_of_message(message)))
         _log.logger.debug("---------------------")
         db.commit()
+        del cursorObj
+        return True
     except:
         _log.logger.error("failed to insert for %s" % (message['id']))
-        sys.exit(0)
+        return False
 
 
-def dbpath_by_year(year):
+def label_exists(db, label_name):
+    sql_stmt = """SELECT * FROM labels WHERE name = '%s';""" % (label_name)
+    cursorObj = db.cursor()
+    result = cursorObj.execute(sql_stmt)
+    del cursorObj
+    if result.fetchone() == None:
+        return False
+    return True
+
+
+def add_label(db, label):
+    """Persist a label from GMail if doesn't already exists locally.
+
+    Args:
+        db: Local db connection object.
+        label: GMail label
+    """
+    label_name = label['name']
+
+    if label_exists(db, label_name):
+        _log.logger.info("label:%s already exists, skipping db entry" % (label_name))
+        return
+
+    _log.logger.debug("[+] adding label: %s" % (label_name))
+
+    cursorObj = db.cursor()
+    sql_stmt = """INSERT INTO labels
+                        (name, label)
+                        VALUES (?,?)"""
+    values = (
+        label_name,
+        str(label),
+    )
+
+    try:
+        cursorObj.execute(sql_stmt, values)
+        _log.logger.debug("adding label: %s" % (label_name))
+        _log.logger.debug("---------------------")
+        db.commit()
+        del cursorObj
+        return True
+    except:
+        _log.logger.error("failed to insert for %s" % (label_name))
+        return False
+
+
+def dbpath_by_token(basename, token):
     """Returns DB path generated based on year.
 
     Args:
@@ -127,7 +206,7 @@ def dbpath_by_year(year):
     Returns:
         DB filesystem path.
     """
-    db_name = "gmail-to-delete-%d.db" % (year)
+    db_name = "%s-%s.db" % (str(basename), str(token))
     return os.path.join(_cfg.data_basepath(), db_name)
 
 
@@ -140,4 +219,16 @@ def connection_by_year(year):
     Returns:
         Local db connection object.
     """
-    return sql_connection(dbpath_by_year(year))
+    return sql_connection(dbpath_by_token("gmail-to-delete", year))
+
+
+def connection_by_feature(feature):
+    """Returns SQLite3 connection to db created at path for given year.
+
+    Args:
+        feature: Name of feature/construct; like mails, labels, spams, etc
+
+    Returns:
+        Local db connection object.
+    """
+    return sql_connection(dbpath_by_token("gmail", feature))

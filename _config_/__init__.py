@@ -11,7 +11,10 @@ def config_yaml():
     Args: None
     """
     try:
-        return sys.argv[1]
+        if os.path.exists(sys.argv[1]):
+            return sys.argv[1]
+        else:
+            return "config.yaml"
     except:
         try:
             return os.environ("GMAIL_HELPER_CONFIG")
@@ -80,6 +83,13 @@ def filters_to_delete():
 
 def message_ids_to_skip():
     ret_val = env_else_yaml("message_ids_to_skip")
+    if isinstance(ret_val, list):
+        return ret_val
+    else:
+        return ret_val.split(",")
+
+def labels_to_skip():
+    ret_val = env_else_yaml("labels_to_skip")
     if isinstance(ret_val, list):
         return ret_val
     else:

@@ -48,3 +48,16 @@ def gmail_messages():
     creds = google_oauth_creds()
     service = build('gmail', 'v1', credentials=creds, cache_discovery=False)
     return service.users().messages()
+
+
+def gmail_labels():
+    """Returns GMail labels object exposing labels API.
+
+    Args: None
+
+    Returns:
+        GMail labels object.
+    """
+    creds = google_oauth_creds()
+    service = build('gmail', 'v1', credentials=creds, cache_discovery=False)
+    return service.users().labels()

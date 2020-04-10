@@ -20,3 +20,5 @@ filters_to_delete:
   - "from:(googlegroups.com)"
 
 message_ids_to_skip: []
+
+labels_to_skip: []

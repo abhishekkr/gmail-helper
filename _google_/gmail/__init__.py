@@ -5,6 +5,20 @@ import _dbms_ as _db
 import _logging_ as _log
 
 
+def get_labels(db, labels_obj, user_id='me'):
+    results = labels_obj.list(userId='me').execute()
+    labels = results.get('labels', [])
+
+    if not labels:
+        _log.logger.info("No labels found.")
+        return
+
+    print('Labels:')
+    for label in labels:
+        if _db.add_label(db, label):
+            print("~ added: %s" % (label['name']))
+
+
 def get_mail(db, messages_obj, msg_id, user_id='me'):
     """Fetch a message from GMail by id and adds it to passed db.
 
@@ -18,8 +32,13 @@ def get_mail(db, messages_obj, msg_id, user_id='me'):
     message = messages_obj.get(
         userId=user_id, id=msg_id, format='full'
     ).execute()
+
+    if set.intersection(set(_cfg.labels_to_skip()), set(message['labelIds'])) != set():
+        return False
     _log.logger.debug("adding message: %s" % (message['id']))
-    _db.add_message(db, message)
+    if not _db.add_message(db, message):
+        return False
+    return True
 
 
 def delete_mail(messages_obj, msg_id, user_id='me'):
@@ -34,8 +53,8 @@ def delete_mail(messages_obj, msg_id, user_id='me'):
     try:
       messages_obj.delete(userId=user_id, id=msg_id).execute()
       _log.logger.info('Message with id: %s deleted successfully.' % msg_id)
-    except:
-      _log.logger.error('An error occurred: %s' % error)
+    except Exception as e:
+        _log.logger.error('An error occurred: %s' % str(e))
 
 
 def mails_by_query(messages_obj, user_id='me', query=''):
@@ -67,8 +86,8 @@ def mails_by_query(messages_obj, user_id='me', query=''):
       messages.extend(response['messages'])
 
     return messages
-  except:
-    _log.logger.error('An error occurred: %s' % error)
+  except Exception as e:
+    _log.logger.error('An error occurred: %s' % str(e))
     return []
 
 
@@ -87,5 +106,7 @@ def get_delete_mails_by_query(db, messages_obj, user_id='me', query=''):
     for message in mails_by_query(messages_obj, user_id, query):
         if message['id'] in message_ids_to_skip: continue
         _log.logger.debug(message['id'])
-        get_mail(db, messages_obj, message['id'])
-        delete_mail(messages_obj, message['id'])
+        if get_mail(db, messages_obj, message['id']):
+            delete_mail(messages_obj, message['id'])
+        else:
+            _log.logger.error("not deleting mail: %s" % (message['id']))

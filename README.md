@@ -17,6 +17,8 @@
 > by default it reads mails first and stores it locally in a sqlite DB separated by year of mail, then deletes
 >
 > How to use: `python3 delete-mails.py ./config-yamls/delete-mails-config.yaml`
+>
+> GMail API doc: [developers.google.com/gmail/api/v1/reference/users/messages/delete](https://developers.google.com/gmail/api/v1/reference/users/messages/delete)
 
 ---
 
