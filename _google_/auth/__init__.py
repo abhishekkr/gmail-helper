@@ -37,6 +37,12 @@ def google_oauth_creds():
     return creds
 
 
+def __gmail_v1__():
+    creds = google_oauth_creds()
+    service = build('gmail', 'v1', credentials=creds, cache_discovery=False)
+    return service.users()
+
+
 def gmail_messages():
     """Returns GMail messages object exposing message API.
 
@@ -45,9 +51,7 @@ def gmail_messages():
     Returns:
         GMail message object.
     """
-    creds = google_oauth_creds()
-    service = build('gmail', 'v1', credentials=creds, cache_discovery=False)
-    return service.users().messages()
+    return __gmail_v1__().messages()
 
 
 def gmail_labels():
@@ -58,6 +62,15 @@ def gmail_labels():
     Returns:
         GMail labels object.
     """
-    creds = google_oauth_creds()
-    service = build('gmail', 'v1', credentials=creds, cache_discovery=False)
-    return service.users().labels()
+    return __gmail_v1__().labels()
+
+
+def gmail_filters():
+    """Returns GMail labels object exposing labels API.
+
+    Args: None
+
+    Returns:
+        GMail labels object.
+    """
+    return __gmail_v1__().settings().filters()

@@ -35,3 +35,9 @@
 * check recent mails for a specific mail, act as desired if received
 
 ---
+
+### For Contributors
+
+* Decent list and definitions for possible exposures for Google-API-Python-Client [http://googleapis.github.io/google-api-python-client/docs/dyn/gmail_v1.html](http://googleapis.github.io/google-api-python-client/docs/dyn/gmail_v1.html)
+
+---

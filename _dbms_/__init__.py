@@ -1,3 +1,4 @@
+import json
 import os
 import sqlite3
 from sqlite3 import Error
@@ -5,6 +6,27 @@ import sys
 
 import _logging_ as _log
 import _config_ as _cfg
+
+
+def check_and_write_json(json_path, json_string):
+    try:
+        json_object = json.dumps(json_string, indent=4)
+        with open(json_path, "w") as outfile:
+            outfile.write(json_object)
+        _log.logger.debug("saved json at %s" % (json_path))
+    except Exception as e:
+        _log.logger.error("not saving json: %s" % (json_string))
+        print(e)
+        return False
+    return True
+
+
+def load_json(json_path):
+    data = {}
+    # let it raise; we don't want failed empty filter for processing further
+    with open(json_path) as fyl:
+        data = json.load(fyl)
+    return data
 
 
 def sql_connection(dbpath='mydatabase.db'):
@@ -65,6 +87,23 @@ def create_schema_labels(db):
         CONSTRAINT name_pk PRIMARY KEY (name))""")
     cursorObj.execute("""CREATE INDEX IF NOT EXISTS idx_labels_name
         ON labels (name);""")
+    db.commit()
+
+
+def create_schema_filters(db):
+    """Creates 'filters' schema on given DB connection.
+
+    Args:
+        db: Local db connection object.
+    """
+    _log.logger.debug("creating table filters")
+    cursorObj = db.cursor()
+    cursorObj.execute("""CREATE TABLE IF NOT EXISTS filters(
+        id text,
+        filter blob,
+        CONSTRAINT id_pk PRIMARY KEY (id))""")
+    cursorObj.execute("""CREATE INDEX IF NOT EXISTS idx_filters_id
+        ON filters (id);""")
     db.commit()
 
 
@@ -194,6 +233,52 @@ def add_label(db, label):
         return True
     except:
         _log.logger.error("failed to insert for %s" % (label_name))
+        return False
+
+
+def filter_exists(db, filter_id):
+    sql_stmt = """SELECT * FROM filters WHERE id = '%s';""" % (filter_id)
+    cursorObj = db.cursor()
+    result = cursorObj.execute(sql_stmt)
+    del cursorObj
+    if result.fetchone() == None:
+        return False
+    return True
+
+
+def add_filter(db, filter):
+    """Persist a filter from GMail if doesn't already exists locally.
+
+    Args:
+        db: Local db connection object.
+        filter: GMail filter
+    """
+    filter_id = filter['id']
+
+    if filter_exists(db, filter_id):
+        _log.logger.info("filter:%s already exists, skipping db entry" % (filter_id))
+        return
+
+    _log.logger.debug("[+] adding filter: %s" % (filter_id))
+
+    cursorObj = db.cursor()
+    sql_stmt = """INSERT INTO filters
+                        (name, filter)
+                        VALUES (?,?)"""
+    values = (
+        filter_id,
+        str(filter),
+    )
+
+    try:
+        cursorObj.execute(sql_stmt, values)
+        _log.logger.debug("adding filter: %s" % (filter_id))
+        _log.logger.debug("---------------------")
+        db.commit()
+        del cursorObj
+        return True
+    except:
+        _log.logger.error("failed to insert for %s" % (filter_id))
         return False
 
 

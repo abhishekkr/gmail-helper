@@ -58,8 +58,21 @@ def gmail_auth_picklepath():
 def log_debug():
     return env_else_yaml("log_debug")
 
+
+def get_dir_config(config_key):
+    fs_path = env_else_yaml(config_key)
+    if not os.path.isdir(fs_path):
+        try:
+            os.makedirs(fs_path)
+        except:
+            print("failed creating configured %s: %s" % (config_key, fs_path))
+    return fs_path
+
 def data_basepath():
-    return env_else_yaml("data_basepath")
+    return get_dir_config("data_basepath")
+
+def filters_json_basepath():
+    return get_dir_config("filters_json_basepath")
 
 def scopes():
     ret_val = env_else_yaml("scopes")

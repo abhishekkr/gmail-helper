@@ -1,0 +1,13 @@
+gmail_credential_jsonpath: "/secure-read-only-to-me-path/credentials.json"
+
+gmail_auth_picklepath: "/secure-read-only-to-me-patch/gmail.pickle"
+
+log_debug: "on"
+
+scopes:
+  - "https://mail.google.com/"
+  - "https://www.googleapis.com/auth/gmail.settings.basic"
+
+data_basepath: "data"
+
+filters_json_basepath: "data/filters"

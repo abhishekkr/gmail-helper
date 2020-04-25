@@ -1,4 +1,5 @@
 from apiclient import errors
+import os
 
 import _config_ as _cfg
 import _dbms_ as _db
@@ -110,3 +111,42 @@ def get_delete_mails_by_query(db, messages_obj, user_id='me', query=''):
             delete_mail(messages_obj, message['id'])
         else:
             _log.logger.error("not deleting mail: %s" % (message['id']))
+
+
+def _get_filters_(filters_obj, user_id):
+    results = filters_obj.list(userId=user_id).execute()
+    filters = results.get('filter', [])
+
+    if not filters:
+        _log.logger.info("No filters found.")
+        return []
+    return filters
+
+
+def get_filters(db, filters_obj, user_id='me'):
+    print('filters:')
+    for filter in _get_filters_(filters_obj, user_id):
+        if _db.add_filter(db, filter):
+            print("~ added: %s" % (filter['id']))
+            print(filter['criteria'])
+
+
+def get_filters_to_json(filters_obj, user_id="me"):
+    filters_json_basepath = _cfg.filters_json_basepath()
+    for filter in _get_filters_(filters_obj, user_id):
+        filter_path = os.path.join(filters_json_basepath, "%s.json" % (filter['id']))
+        if _db.check_and_write_json(filter_path, filter):
+            print("~ added: %s" % (filter['id']))
+            print(filter['criteria'])
+
+
+def create_filter_from_json(filters_obj, json_path, user_id="me"):
+    filter_json = _db.load_json(json_path)
+    results = filters_obj.create(userId=user_id, body=filter_json).execute()
+    return results
+
+
+def delete_filter(filters_obj, filter_id, user_id="me"):
+    results = filters_obj.delete(userId=user_id, id=filter_id).execute()
+    print(results)
+    return results
