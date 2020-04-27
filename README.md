@@ -24,6 +24,20 @@
 
 > How to use: `python3 get-labels.py ./config-yamls/get-labels-config.yaml`
 
+
+* Get all GMail filters
+
+> * persisted in db: `python3 get-labels.py ./config-yamls/get-filters-config.yaml`
+>
+> * exported to json in configured dir `filters_json_basepath` with adding switch `--to-json` to above command
+
+
+* Create a new/overwrite GMail filter
+
+> * read [command help](wiki/filter-create.md) for usage help
+>
+> * details can be found at [developers.google.com](https://developers.google.com/gmail/api/v1/reference/users/settings/filters)
+
 ---
 
 #### ToDo
