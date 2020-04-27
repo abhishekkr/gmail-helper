@@ -1,6 +1,6 @@
 gmail_credential_jsonpath: "/secure-read-only-to-me-path/credentials.json"
 
-gmail_auth_picklepath: "/secure-read-only-to-me-patch/gmail.pickle"
+gmail_auth_picklepath: "/secure-read-only-to-me-path/gmail.pickle"
 
 log_debug: "on"
 
