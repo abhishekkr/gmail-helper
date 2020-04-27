@@ -5,6 +5,8 @@
 
 * generate and store `credentials.json` by creating an **OAuth client ID** credentials for your Google account by browsing [https://console.developers.google.com/apis/dashboard](https://console.developers.google.com/apis/dashboard) and clicking on `+ Create Credentials` button
 
+> details on how to get credentials json are [here](wiki/gmail-credentials.md)
+
 * for creating mail filter queries [Google Support Reference](https://support.google.com/mail/answer/7190?ctx=gmail&hl=en&authuser=0) can be used
 
 * if for some reason different scope need to be used in configuration, [Gmail Scope Reference](https://developers.google.com/gmail/api/auth/scopes#gmail_scopes) can be used
@@ -14,7 +16,7 @@
 
 * Permanently delete mails based on search criteria allowed by GMail such as partial match of `subject`, `to` or `from` e-mail address fields (also allowing just domain match). Ran for a range of years provided by config as `since_year` and `before_year`.
 
-> by default it reads mails first and stores it locally in a sqlite DB separated by year of mail, then deletes
+> by default it reads mails first and stores it locally (except attachments) in a sqlite DB separated by year of mail, then deletes
 >
 > How to use: `python3 delete-mails.py ./config-yamls/delete-mails-config.yaml`
 >
