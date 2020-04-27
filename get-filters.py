@@ -1,7 +1,10 @@
 # Copyright 2020 abhishekkr <abhikumar163@gmail.com>
 """
 How to use:
-    python3 get-labels.py ./config-yamls/get-filters-config.yaml
+    * for db persistence
+        python3 get-labels.py ./config-yamls/get-filters-config.yaml
+    * to export as json to filters_json_basepath configured dir
+        python3 get-labels.py ./config-yamls/get-filters-config.yaml --to-json
 
 
 How to configure:
@@ -12,6 +15,7 @@ How to configure:
 > * 'gmail_auth_picklepath' need to be file paths where Google credentials can be stored for reuse
 > * 'scopes' is a list of GMail API scopes made available to Google Auth
 > * 'data_basepath' is under which all DBs would be created
+> * 'filters_json_basepath' is directory path where filters json will be saved if chosen to
 >
 > would be better if all above mentioned file paths should be at a secure location r/w only by your user
 
