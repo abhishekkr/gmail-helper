@@ -56,4 +56,6 @@
 
 * Decent list and definitions for possible exposures for Google-API-Python-Client [http://googleapis.github.io/google-api-python-client/docs/dyn/gmail_v1.html](http://googleapis.github.io/google-api-python-client/docs/dyn/gmail_v1.html)
 
+* [Hacker News discussion](https://news.ycombinator.com/item?id=22989904)
+
 ---

@@ -1,6 +1,8 @@
 
 ## How To Get Authentication Completed
 
+> TROUBLESHOOT: when see `invalid_grant` errors, means your Grant from Google OAuth has expired.. remove your file from path configured for `gmail_auth_picklepath` & re-run; it will re-auth and get fresh grant
+
 * generate and store `credentials.json` by creating an **OAuth client ID** credentials for your Google account by browsing [https://console.developers.google.com/apis/dashboard](https://console.developers.google.com/apis/dashboard) and clicking on `+ Create Credentials` button
 
 * Goto following url for your GMail account: https://console.developers.google.com/apis/credentials

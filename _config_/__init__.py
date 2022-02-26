@@ -15,7 +15,8 @@ def config_yaml():
             return sys.argv[1]
         else:
             return "config.yaml"
-    except:
+    except Exception as e:
+        print(e)
         try:
             return os.environ("GMAIL_HELPER_CONFIG")
         except:
@@ -25,8 +26,9 @@ def config_yaml():
 CONFIG = {}
 try:
     with open(config_yaml(), "r") as ymlfile:
-        CONFIG = yaml.load(ymlfile)
-except:
+        CONFIG = yaml.safe_load(ymlfile)
+except Exception as e:
+    print(e)
     print("error reading config file: '%s'; would try env var as default else make error exit" % (config_yaml()))
 
 
