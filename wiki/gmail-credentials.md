@@ -17,4 +17,8 @@
 
 > Once revoked last step will get repeated again, on next run.
 
+* If it gives error like `deleted_client: The OAuth client was deleted.`, you probably have deleted the key directly or indirectly (deleting Google Project to which it belongs). You would need to create a new project, enable GMail API in it and re-create OAuth Key.
+
+* For an error like `"Gmail API has not been used in project {project-number} before or it is disabled.`, then you just need to enable Gmail API for the project in which you created the key.
+
 ---
