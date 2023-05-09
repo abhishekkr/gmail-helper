@@ -22,6 +22,10 @@
 >
 > GMail API doc: [developers.google.com/gmail/api/v1/reference/users/messages/delete](https://developers.google.com/gmail/api/v1/reference/users/messages/delete)
 
+> result after a recent run
+
+![Google storage freed by 9%](gmail-helper-results.png)
+
 * Fetch created GMail Labels and persist to a local DB
 
 > How to use: `python3 get-labels.py ./config-yamls/get-labels-config.yaml`
